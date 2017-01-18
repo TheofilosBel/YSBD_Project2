@@ -8,6 +8,8 @@ typedef struct Record {
     char city[25];
 } Record;
 
+
+void printRecord(Record* recordptr);
 /*
  * Info struct for every block
  * @bytesInBlock: bytes in the block after the info struct that contain records
@@ -38,7 +40,7 @@ int Sorted_CloseFile(int fileDesc);
 
 int Sorted_InsertEntry(int fileDesc, Record record);
 
-void Sorted_SortFile(char *filename, int fieldNo);
+int Sorted_SortFile(char *filename, int fieldNo);
 
 void Sorted_checkSortedFile(char *filename, int fieldNo);
 

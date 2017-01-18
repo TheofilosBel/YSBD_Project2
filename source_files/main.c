@@ -63,13 +63,14 @@ int main(int argc, char **argv) {
         printf("Error opening file!\n");
     insert_Entries(fd);
 
-    //printDebug(fd);
+    printDebug(fd);
 
     //sort heap file using 2-way merge-sort
-    /*
+
     if(Sorted_SortFile(fileName,0) == -1  )
         printf("Error sorting file!\n");
-    
+
+    /*
     if(Sorted_checkSortedFile("heapFileSorted0",0) == -1  )
         printf("Error sorting file!\n");
     */
