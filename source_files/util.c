@@ -211,7 +211,7 @@ Record *merge_arrays(Record *array1, int size1, Record *array2, int size2, int f
     if ((merged_array = malloc(sizeof(Record)*(size1+size2))) == NULL) {
         perror("Error in merge_arrays , when allocating mem");
     }
-    printf("In merge array\n\n");
+    //printf("In merge array\n\n");
 
     while (recs_writen1 < size1 || recs_writen2 < size2) {
 
@@ -315,9 +315,9 @@ char *merge_files(char *file_name1, char *file_name2, int fieldNo) {
     block_index2 = 1;
     new_block_index = 0;
 
-    printf("+-+-+-+-+-+-File %s + File %s+-+-+-+-+-+-+-+\n",file_name1, file_name2);
-    printDebug(file_desc1);
-    printDebug(file_desc2);
+    printf("+-+-+-+-+-+-File %s , blocks :%d + File %s blocks :%d+-+-+-+-+-+-+-+\n",file_name1,BF_GetBlockCounter(file_desc1) ,file_name2, BF_GetBlockCounter(file_desc2));
+    //printDebug(file_desc1);
+    //printDebug(file_desc2);
     printf("+-+-+-+-+-+-+-+||+-+-+-+-+-+-+-+\n");
 
     /* Read the block 1 from both files */
@@ -331,7 +331,7 @@ char *merge_files(char *file_name1, char *file_name2, int fieldNo) {
     array2 = (Record *) block2 + sizeof(BlockInfo);
 
     /* Merge the files */
-    while(block_index1 <= BF_GetBlockCounter(file_desc1) || block_index2 <= BF_GetBlockCounter(file_desc2)){
+    while(block_index1 <= BF_GetBlockCounter(file_desc1)-1 || block_index2 <= BF_GetBlockCounter(file_desc2)-1 ){
 
         /* Find the right 2 blocks to merge */
         two_blocks_found = 0;
@@ -454,7 +454,7 @@ char *merge_files(char *file_name1, char *file_name2, int fieldNo) {
             }
         }
 
-        //printf("Out of loop merge blocks are %d , %d\n", block_for_merge1, block_for_merge2);
+        printf("Out of loop merge blocks are %d , %d\n", block_for_merge1, block_for_merge2);
 
         /* Find out the size of the arrays */
         memcpy(blockInfo, block1, sizeof(BlockInfo));
@@ -497,6 +497,11 @@ char *merge_files(char *file_name1, char *file_name2, int fieldNo) {
     Sorted_CloseFile(file_desc1);
     Sorted_CloseFile(file_desc2);
     Sorted_CloseFile(file_desc_new);
+
+    /* Remove the 2 */
+    int ret_val;
+    ret_val = remove(file_name1);
+    ret_val = remove(file_name2);
 
     return file_name;
 }

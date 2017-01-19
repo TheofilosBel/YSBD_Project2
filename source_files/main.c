@@ -53,7 +53,8 @@ int main(int argc, char **argv) {
     int fieldNo;
    
     BF_Init();
-    
+
+
     //create heap file
     if (Sorted_CreateFile(fileName) == -1)
         printf("Error creating file!\n");

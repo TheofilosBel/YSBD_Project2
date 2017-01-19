@@ -80,11 +80,14 @@ int Sorted_CreateFile(char *fileName) {
         return -1;
     }
 
+    Sorted_CloseFile(fileDesc);
+
     free(fileInfo);
     return 0;
 }
 
 int Sorted_OpenFile(char *fileName) {
+
     int fileDesc;
     void *block;
     FileInfo *fileInfo;
@@ -289,7 +292,7 @@ int Sorted_SortFile(char *filename, int fieldNo) {
 
 
     /* Create the files needed for stage 2 */
-    for (int file = 1; file < num_of_files ; file++) {
+    for (int file = 1; file <= num_of_files ; file++) {
 
         /* Create the file name */
         file_name = make_file_name(stage, file);
@@ -352,12 +355,13 @@ int Sorted_SortFile(char *filename, int fieldNo) {
         }
 
         /* Close child file */
-        Sorted_CloseFile(curr_file_1);
+        BF_CloseFile(curr_file_1);
 
         /* Free */
         free(file_name);
     }
 
+    Sorted_CloseFile(file_desc_father);
 
     printf("\n\nGoing to stage 2---------------\n\n");
 
@@ -389,11 +393,10 @@ int Sorted_SortFile(char *filename, int fieldNo) {
         }
 
         /* Update the number of files for the next stage and the stage */
-        //num_of_files = num_of_files / 2 + num_of_files % 2;
-        num_of_files = 0;
+        num_of_files = num_of_files / 2 ; //+ num_of_files % 2;
+        //num_of_files = 0;
         stage++;
     }
-
 
     return 0;
 }
