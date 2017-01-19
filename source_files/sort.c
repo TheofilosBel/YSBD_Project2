@@ -282,6 +282,15 @@ int Sorted_SortFile(char *filename, int fieldNo) {
         }
         */
 
+        /* Write back the records */
+        memcpy(block, record_array, sizeof(record_array));
+
+        /* Write the block back */
+        if (BF_WriteBlock(file_desc_father, block_num) < 0){
+            BF_PrintError("Error at Sorted_InsertEntry, when writing block back");
+            return -1;
+        }
+
         /* Free the array */
         free(record_array);
     }

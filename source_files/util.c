@@ -51,6 +51,17 @@ void swap_records(Record *record_array, int r1, int r2){
 
 }
 
+int compare_records(Record record1, Record record2, int fieldNo) {
+    /* --------------------------------
+     * Compare record1 with record2
+     * depending on the filedNo
+     * Return : -1 if record1 < record2
+     * Return : 0 if record1 = record2
+     * Return : 1 if record1 > record2
+     * -------------------------------- */
+
+}
+
 int int_partition( Record *record_array, int l, int r) {
     /* ------------------------------
      * Partition the array , and put
@@ -132,13 +143,15 @@ char* make_file_name(int stage, int file_num) {
     /* ---------------------------------
      * Makes a file name in the format :
      * <stage>"temp"<file_num>.
+     * and the number of chars will be
+     * len(stage) chars + 4 chars + len(file_num) chars.
      * --------------------------------- */
 
     char *file_name;
 
     /* Malloc space */
     if ((file_name = malloc(sizeof(char)*(lenfinder(stage)+4+lenfinder(file_num)+1))) == NULL) {
-        printf("Error , in allocating mem\n");
+        printf("*Error* , in allocating mem\n");
     }
 
     /* Make the file name */
@@ -149,6 +162,40 @@ char* make_file_name(int stage, int file_num) {
 
 
 /*-=-=-=-=-=-=-=-=-=- Merging Functions -=-=-=-=-=-=-=-=-=-*/
+
+Record *merege_arrays(Record *array1, int size1, Record *array2, int size2) {
+    /* -------------------------------
+     * Merge the arrays in an new one
+     * with size size1+size2.
+     * The arrays are sorted!!!
+     * -------------------------------*/
+
+    Record *merged_array;
+    int recs_writen1 = 0, recs_writen2 = 0, recs_in_merged = 0;
+
+    /* Initialize the 3rd array */
+    if ((merged_array = malloc(sizeof(Record)*(size1+size2))) == NULL) {
+        perror("*Error* , in allocating mem\n");
+    }
+
+    while (recs_writen1 < size1 || recs_writen2 < size2) {
+
+        /* Both arrays still have records */
+        if (recs_writen1 < size1 && recs_writen2 < size2) {
+            if ( record_compare(array1[recs_writen1], array2[recs_writen2])) {
+
+            }
+
+
+            /* Update the indices */
+            recs_in_merged++;
+            recs_writen1++;
+            recs_writen2++;
+        }
+    }
+
+}
+
 char *merge_files(char *file_name1, char *file_name2, int fieldNo) {
     /* ------------------------------
      * Merge the 2 files into 1 and
@@ -159,23 +206,14 @@ char *merge_files(char *file_name1, char *file_name2, int fieldNo) {
     int old_stage, old_num;
     char *file_name;
 
-    /* Open the 2 files
-    if ((file_desc1 = BF_OpenFile(file_name1)) < 0) {
+    /* Open the 2 files */
+    if ((file_desc1 = BF_OpenFile(file_name1)) < 0 || (file_desc2 = BF_OpenFile(file_name2)) < 0) {
         BF_PrintError("Error at merge_files, when opening file: ");
         exit(-1);
     }
 
-    if ((file_desc2 = BF_OpenFile(file_name2)) < 0) {
-        BF_PrintError("Error at merge_files, when opening file: ");
-        exit(-1);
-    }*/
 
-    /* Create the new file
-     * The format will be :
-     * <stage>"temp"<File_number> ,
-     * and the number of chars will be
-     * len(stage) chars + 4 chars + len(file_num) chars.
-     * Also :
+    /* Create the new file name ,
      * new_stage is stage of filename2 plus 1
      * new_file_num is the num of filename2 / 2
      */
@@ -183,7 +221,10 @@ char *merge_files(char *file_name1, char *file_name2, int fieldNo) {
     /* Take stage and num from file 2 */
     sscanf(file_name2, "%dtemp%d",&old_stage, &old_num );
 
+    /* Make the file name */
     file_name = make_file_name(old_stage+1, old_num/2);
+
+    /* Mereg the files */
 
     return file_name;
 }
