@@ -5,14 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Prints a single record */
-void printRecord(Record* recordptr){
-    printf("id: %d\n", recordptr->id);
-    printf("Name: %s\n", recordptr->name);
-    printf("Surname: %s\n", recordptr->surname);
-    printf("City: %s\n\n", recordptr->city);
-}
-
 void printDebug(int fileDesc) {
     BlockInfo tempInfo;
     void *block;
@@ -42,10 +34,6 @@ void printDebug(int fileDesc) {
         blockIndex++;
     }
 }
-
-
-
-
 
 int Sorted_CreateFile(char *fileName) {
     int fileDesc;
@@ -396,10 +384,70 @@ int Sorted_SortFile(char *filename, int fieldNo) {
     return 0;
 }
 
-void Sorted_checkSortedFile(char *filename, int fieldNo) {
-    return;
+int Sorted_checkSortedFile(char *filename, int fieldNo) {
+    int fileDesc;
+    BlockInfo block_info;
+    Record *record_array;
+    int block_num;
+    void *block;
+
+    /* Open the file */
+    if ((fileDesc = Sorted_OpenFile(filename)) < 0) {
+        BF_PrintError("Error at Sorted_checkSortedFile, when opening file: ");
+        return -1;
+    }
+
+    /*
+     * The file should have at least two blocks
+     * since block0 only contains the file info
+     */
+    if (BF_GetBlockCounter(fileDesc) < 2) {
+        printf("The file should have at least one block with records\n");
+        return -1;
+    }
+
+    /* Close the file */
+    if ((fileDesc = Sorted_CloseFile(filename)) < 0) {
+        BF_PrintError("Error at Sorted_checkSortedFile, when closing file: ");
+        return -1;
+    }
+
+    return 0;
 }
 
 int Sorted_GetAllEntries(int fileDesc, int *fieldNo, void *value) {
+    BlockInfo tempInfo;
+    void *block;
+    int offset;
+    int blockIndex = 1;
+    Record recordTemp;
+
+    if (value == NULL) {
+        /* If value is NULL print all the records */
+        while (blockIndex < BF_GetBlockCounter(fileDesc)) {
+            /* Read block with num blockIndex */
+            if (BF_ReadBlock(fileDesc, blockIndex, &block) < 0) {
+                BF_PrintError("Error at Sorted_GetAllEntries, when getting block: ");
+                return;
+            }
+
+            /* Get its info */
+            memcpy(&tempInfo, block, sizeof(BlockInfo));
+            offset = sizeof(BlockInfo);
+
+            /* Print the block's records */
+            while (offset < tempInfo.bytesInBlock) {
+                memcpy(&recordTemp, block + offset, sizeof(Record));
+                offset += sizeof(Record);
+                printRecord(&recordTemp);
+            }
+
+            blockIndex++;
+        }
+    }
+    else {
+        /* Print only the required records */
+    }
+
     return 0;
 }

@@ -2,7 +2,7 @@ OBJS	= sort.o main.o util.o
 OUT		= sort
 CC		= gcc
 FLAGS	= -c -Wall
-LIB 	= ../BF/linux/BF_32.a
+LIB 	= ../BF/linux/BF_64.a
 
 # test HT
 t1: $(OBJS)
