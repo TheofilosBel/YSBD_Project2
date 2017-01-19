@@ -42,7 +42,7 @@ int Sorted_InsertEntry(int fileDesc, Record record);
 
 int Sorted_SortFile(char *filename, int fieldNo);
 
-void Sorted_checkSortedFile(char *filename, int fieldNo);
+int Sorted_checkSortedFile(char *filename, int fieldNo);
 
 int Sorted_GetAllEntries(int fileDesc, int *fieldNo, void *value);
 

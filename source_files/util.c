@@ -1,11 +1,16 @@
-//
-// Created by theofilos on 17/1/2017.
-//
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "../BF/linux/BF.h"
 #include "util.h"
+
+/* Prints a single record */
+void printRecord(Record* recordptr) {
+    printf("id: %d\n", recordptr->id);
+    printf("Name: %s\n", recordptr->name);
+    printf("Surname: %s\n", recordptr->surname);
+    printf("City: %s\n\n", recordptr->city);
+}
 
 int lenfinder(int x) {
     /* -------------------------
