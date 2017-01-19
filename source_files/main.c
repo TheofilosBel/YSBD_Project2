@@ -57,13 +57,13 @@ int main(int argc, char **argv) {
     //create heap file
     if (Sorted_CreateFile(fileName) == -1)
         printf("Error creating file!\n");
-    
+
     fd = Sorted_OpenFile(fileName);
     if (fd == -1)
         printf("Error opening file!\n");
     insert_Entries(fd);
 
-    printDebug(fd);
+    //printDebug(fd);
 
     //sort heap file using 2-way merge-sort
 

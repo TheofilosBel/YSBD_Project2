@@ -12,7 +12,7 @@ sort.o: sort.c
 main.o: main.c
 	$(CC) $(FLAGS) main.c
 util.o: util.c
-	$(CC) $(FLAGS) util.c
+	$(CC) $(FLAGS) -std=c99 util.c
 
 # clean up
 clean:
