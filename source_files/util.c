@@ -305,10 +305,7 @@ char *merge_files(char *file_name1, char *file_name2, int fieldNo) {
     /* Create a new file - open the new file */
     Sorted_CreateFile(file_name);
 
-    if ((file_desc_new = BF_OpenFile(file_name)) < 0) {
-        BF_PrintError("Error at merge_files, when opening new file: ");
-        exit(-1);
-    }
+    file_desc_new = Sorted_OpenFile(file_name);
 
 
     /* Initialize */
@@ -488,10 +485,6 @@ char *merge_files(char *file_name1, char *file_name2, int fieldNo) {
         printDebug(file_desc_new);
         printf("+-+-+-+-+-+-+-+end+-+-+-+-+-+-+-+\n");
 
-        /* Close all 3 files */
-        Sorted_CloseFile(file_desc1);
-        Sorted_CloseFile(file_desc2);
-        Sorted_CloseFile(file_desc_new);
 
         /* Free */
         free(array1);
@@ -500,7 +493,10 @@ char *merge_files(char *file_name1, char *file_name2, int fieldNo) {
         new_block_index++;
     }
 
-
+    /* Close all 3 files */
+    Sorted_CloseFile(file_desc1);
+    Sorted_CloseFile(file_desc2);
+    Sorted_CloseFile(file_desc_new);
 
     return file_name;
 }

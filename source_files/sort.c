@@ -274,6 +274,8 @@ int Sorted_SortFile(char *filename, int fieldNo) {
         free(record_array);
     }
 
+    Sorted_CloseFile(file_desc_father);
+    file_desc_father = Sorted_OpenFile(filename);
 
     /* External 2 way shorting */
     int num_of_files = 0;
@@ -282,11 +284,12 @@ int Sorted_SortFile(char *filename, int fieldNo) {
     char *file_name, *file_name1, *file_name2;
 
     /* Initialize vars */
-    num_of_files = BF_GetBlockCounter(file_desc_father) - 2;  /* -1 also for block 0*/
+    num_of_files = BF_GetBlockCounter(file_desc_father) - 1;  /* -1 also for block 0*/
     printf("Num of files %d\n", num_of_files);
 
+
     /* Create the files needed for stage 2 */
-    for (int file = 0; file < num_of_files ; file++) {
+    for (int file = 1; file < num_of_files ; file++) {
 
         /* Create the file name */
         file_name = make_file_name(stage, file);
@@ -305,14 +308,29 @@ int Sorted_SortFile(char *filename, int fieldNo) {
         //printDebug(file_desc_father);
 
         /* Read father's file block */
-        if (BF_ReadBlock(file_desc_father, file+1, &block) < 0) {
+        if (BF_ReadBlock(file_desc_father, file, &block) < 0) {
             BF_PrintError("Error at Sorted_ShortFile, when getting block: ");
             exit(-1);
         }
 
+        /* Print block */
+/*
+        Record record;
+        int offset1 = 0;
+        printf("----------------------------------------\n");
+        memcpy(&block_info, block, sizeof(BlockInfo));
+        printf("Block %d - bytesInBlock = %d\n\n", file, block_info.bytesInBlock);
+        offset1 += sizeof(BlockInfo);
+
+        while (offset1 < block_info.bytesInBlock) {
+            memcpy(&record, block + offset1, sizeof(Record));
+            offset1 += sizeof(Record);
+            printRecord(&record);
+        }
+
         memcpy(&block_info, block, sizeof(BlockInfo));
         printf("File %d, and info from fathers %d\n", file, block_info.bytesInBlock);
-
+*/
         /* Allocate size for one block */
         if ( BF_AllocateBlock(curr_file_1) != 0) {
             perror("Error , at Sorted_ShortFile when allocating block\n");
@@ -333,12 +351,6 @@ int Sorted_SortFile(char *filename, int fieldNo) {
             return -1;
         }
 
-        if ( file == 6){
-            printf("Here is 6 \n");
-            printDebug(curr_file_1);
-        }
-
-
         /* Close child file */
         Sorted_CloseFile(curr_file_1);
 
@@ -346,13 +358,14 @@ int Sorted_SortFile(char *filename, int fieldNo) {
         free(file_name);
     }
 
+
     printf("\n\nGoing to stage 2---------------\n\n");
 
     while (num_of_files != 0) {
 
         /* Pick the 2 files for merging */
-        curr_file_1 = 0;
-        curr_file_2 = 1;
+        curr_file_1 = 1;
+        curr_file_2 = 2;
 
         /* Merge the two files */
         for (int i = 0 ; i < num_of_files/2 ; i++) {
@@ -380,6 +393,7 @@ int Sorted_SortFile(char *filename, int fieldNo) {
         num_of_files = 0;
         stage++;
     }
+
 
     return 0;
 }
@@ -428,7 +442,7 @@ int Sorted_GetAllEntries(int fileDesc, int *fieldNo, void *value) {
             /* Read block with num blockIndex */
             if (BF_ReadBlock(fileDesc, blockIndex, &block) < 0) {
                 BF_PrintError("Error at Sorted_GetAllEntries, when getting block: ");
-                return;
+                return -1;
             }
 
             /* Get its info */
