@@ -16,11 +16,11 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source_files/sort" afterPath="$PROJECT_DIR$/source_files/sort" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source_files/sort.o" afterPath="$PROJECT_DIR$/source_files/sort.o" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source_files/util.o" afterPath="$PROJECT_DIR$/source_files/util.o" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source_files/Makefile" afterPath="$PROJECT_DIR$/source_files/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source_files/main.c" afterPath="$PROJECT_DIR$/source_files/main.c" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source_files/sort.c" afterPath="$PROJECT_DIR$/source_files/sort.c" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source_files/sort.h" afterPath="$PROJECT_DIR$/source_files/sort.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source_files/util.c" afterPath="$PROJECT_DIR$/source_files/util.c" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source_files/util.h" afterPath="$PROJECT_DIR$/source_files/util.h" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -60,11 +60,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sort.c" pinned="false" current-in-tab="true">
+      <file leaf-file-name="sort.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/source_files/sort.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="568">
-              <caret line="320" column="40" lean-forward="false" selection-start-line="320" selection-start-column="40" selection-end-line="320" selection-end-column="40" />
+            <state relative-caret-position="1360">
+              <caret line="295" column="37" lean-forward="false" selection-start-line="295" selection-start-column="37" selection-end-line="295" selection-end-column="37" />
               <folding>
                 <element signature="e#0#27#0" expanded="true" />
               </folding>
@@ -82,13 +82,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="util.c" pinned="false" current-in-tab="false">
+      <file leaf-file-name="util.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/source_files/util.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="424">
-              <caret line="245" column="0" lean-forward="false" selection-start-line="245" selection-start-column="0" selection-end-line="245" selection-end-column="0" />
+            <state relative-caret-position="-710">
+              <caret line="250" column="0" lean-forward="false" selection-start-line="250" selection-start-column="0" selection-end-line="250" selection-end-column="0" />
               <folding>
-                <element signature="e#44#63#0" expanded="true" />
+                <element signature="e#0#19#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -97,8 +97,8 @@
       <file leaf-file-name="util.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/source_files/util.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="252">
-              <caret line="14" column="65" lean-forward="false" selection-start-line="14" selection-start-column="65" selection-end-line="14" selection-end-column="65" />
+            <state relative-caret-position="216">
+              <caret line="12" column="65" lean-forward="false" selection-start-line="12" selection-start-column="65" selection-end-line="12" selection-end-column="65" />
               <folding />
             </state>
           </provider>
@@ -399,12 +399,12 @@
       <option name="presentableId" value="Default" />
       <updated>1484671077058</updated>
       <workItem from="1484671078734" duration="22601000" />
-      <workItem from="1484812853386" duration="22539000" />
+      <workItem from="1484812853386" duration="22858000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="45140000" />
+    <option name="totallyTimeSpent" value="45459000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="24" width="1920" height="1056" extended-state="6" />
@@ -500,7 +500,7 @@
         <state relative-caret-position="2502">
           <caret line="139" column="87" lean-forward="false" selection-start-line="139" selection-start-column="87" selection-end-line="139" selection-end-column="87" />
           <folding>
-            <element signature="e#44#63#0" expanded="true" />
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -554,19 +554,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/source_files/util.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="14" column="65" lean-forward="false" selection-start-line="14" selection-start-column="65" selection-end-line="14" selection-end-column="65" />
+        <state relative-caret-position="216">
+          <caret line="12" column="65" lean-forward="false" selection-start-line="12" selection-start-column="65" selection-end-line="12" selection-end-column="65" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source_files/util.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="424">
-          <caret line="245" column="0" lean-forward="false" selection-start-line="245" selection-start-column="0" selection-end-line="245" selection-end-column="0" />
-          <folding>
-            <element signature="e#44#63#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -582,10 +572,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/source_files/sort.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="568">
-          <caret line="320" column="40" lean-forward="false" selection-start-line="320" selection-start-column="40" selection-end-line="320" selection-end-column="40" />
+        <state relative-caret-position="1360">
+          <caret line="295" column="37" lean-forward="false" selection-start-line="295" selection-start-column="37" selection-end-line="295" selection-end-column="37" />
           <folding>
             <element signature="e#0#27#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source_files/util.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-710">
+          <caret line="250" column="0" lean-forward="false" selection-start-line="250" selection-start-column="0" selection-end-line="250" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
