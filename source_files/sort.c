@@ -306,34 +306,29 @@ int Sorted_SortFile(char *filename, int fieldNo) {
     num_of_files = BF_GetBlockCounter(file_desc_father) - 1;
     printf("Num of files %d\n", num_of_files);
 
+    /* Create the files needed for stage 2 */
+    for (int file = 0; file < num_of_files ; file++) {
+
+        /* Create the file name. */
+        file_name = make_file_name(stage, file);
+        printf("File name is %s\n", file_name);
+
+        /* Create a new BF file */
+        if (BF_CreateFile(file_name) < 0) {
+            BF_PrintError("Error at Sorted_CreateFile, when creating file: ");
+            return -1;
+        }
+
+        /* Free */
+        free(file_name);
+    }
+
     while (num_of_files != 0) {
 
         /* Initialize the array of the fd's */
         if ((file_desc_array =malloc(sizeof(int)*num_of_files)) == NULL) {
             printf("Error , in allocating mem\n");
             exit(-1);
-        }
-
-        /* Create the files needed */
-        for (int file = 0; file < num_of_files ; file++) {
-
-            /* Create the file name.
-             * The format will be :
-             * <stage>"temp"<File_number> ,
-             * and the number of chars will be
-             * len(stage) chars + 4 chars + len(file_num) chars
-             */
-            file_name = make_file_name(stage, file);
-            printf("File name is %s\n", file_name);
-
-            /* Create a new BF file
-            if (BF_CreateFile(file_name) < 0) {
-                BF_PrintError("Error at Sorted_CreateFile, when creating file: ");
-                return -1;
-            }
-
-            /* Free */
-            free(file_name);
         }
 
         /* Pick the 2 files for merging */
@@ -350,8 +345,8 @@ int Sorted_SortFile(char *filename, int fieldNo) {
             file_name = merge_files(file_name1, file_name2, fieldNo);
             printf("%s + %s -> %s\n", file_name1, file_name2, file_name);
 
-            /* update the curr files indicies */
-            curr_file_1 = curr_file_2 + 1;
+            /* update the curr files indices */
+            curr_file_1 += 2;
             curr_file_2 = curr_file_1 + 1;
 
             /* Free */

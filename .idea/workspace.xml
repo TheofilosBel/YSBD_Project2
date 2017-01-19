@@ -12,6 +12,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2107487f-df36-48db-ad4e-b1f85720c58d" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source_files/sort.c" afterPath="$PROJECT_DIR$/source_files/sort.c" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source_files/util.c" afterPath="$PROJECT_DIR$/source_files/util.c" />
     </list>
@@ -53,11 +54,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sort.c" pinned="false" current-in-tab="true">
+      <file leaf-file-name="sort.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/source_files/sort.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="478">
-              <caret line="342" column="33" lean-forward="true" selection-start-line="342" selection-start-column="33" selection-end-line="342" selection-end-column="33" />
+            <state relative-caret-position="378">
+              <caret line="344" column="31" lean-forward="false" selection-start-line="344" selection-start-column="31" selection-end-line="344" selection-end-column="31" />
               <folding>
                 <element signature="e#0#27#0" expanded="true" />
               </folding>
@@ -75,11 +76,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="util.c" pinned="false" current-in-tab="false">
+      <file leaf-file-name="util.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/source_files/util.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="252">
-              <caret line="60" column="42" lean-forward="false" selection-start-line="60" selection-start-column="42" selection-end-line="60" selection-end-column="42" />
+            <state relative-caret-position="3348">
+              <caret line="234" column="13" lean-forward="true" selection-start-line="234" selection-start-column="13" selection-end-line="234" selection-end-column="13" />
               <folding>
                 <element signature="e#44#63#0" expanded="true" />
               </folding>
@@ -91,7 +92,7 @@
         <entry file="file://$PROJECT_DIR$/source_files/util.h">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="252">
-              <caret line="14" column="26" lean-forward="false" selection-start-line="14" selection-start-column="26" selection-end-line="14" selection-end-column="26" />
+              <caret line="14" column="65" lean-forward="false" selection-start-line="14" selection-start-column="65" selection-end-line="14" selection-end-column="65" />
               <folding />
             </state>
           </provider>
@@ -100,8 +101,8 @@
       <file leaf-file-name="BF.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BF/linux/BF.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1296">
-              <caret line="72" column="16" lean-forward="false" selection-start-line="72" selection-start-column="4" selection-end-line="72" selection-end-column="16" />
+            <state relative-caret-position="586">
+              <caret line="99" column="20" lean-forward="false" selection-start-line="99" selection-start-column="4" selection-end-line="99" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -389,12 +390,12 @@
       <option name="presentableId" value="Default" />
       <updated>1484671077058</updated>
       <workItem from="1484671078734" duration="22601000" />
-      <workItem from="1484812853386" duration="3584000" />
+      <workItem from="1484812853386" duration="11572000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="26185000" />
+    <option name="totallyTimeSpent" value="34173000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="24" width="1920" height="1056" extended-state="6" />
@@ -526,22 +527,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/BF/linux/BF.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1296">
-          <caret line="72" column="16" lean-forward="false" selection-start-line="72" selection-start-column="4" selection-end-line="72" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source_files/util.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="14" column="26" lean-forward="false" selection-start-line="14" selection-start-column="26" selection-end-line="14" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/source_files/main.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="442">
@@ -560,22 +545,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source_files/util.c">
+    <entry file="file://$PROJECT_DIR$/BF/linux/BF.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="60" column="42" lean-forward="false" selection-start-line="60" selection-start-column="42" selection-end-line="60" selection-end-column="42" />
-          <folding>
-            <element signature="e#44#63#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="586">
+          <caret line="99" column="20" lean-forward="false" selection-start-line="99" selection-start-column="4" selection-end-line="99" selection-end-column="20" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source_files/sort.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="478">
-          <caret line="342" column="33" lean-forward="true" selection-start-line="342" selection-start-column="33" selection-end-line="342" selection-end-column="33" />
+        <state relative-caret-position="378">
+          <caret line="344" column="31" lean-forward="false" selection-start-line="344" selection-start-column="31" selection-end-line="344" selection-end-column="31" />
           <folding>
             <element signature="e#0#27#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source_files/util.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="14" column="65" lean-forward="false" selection-start-line="14" selection-start-column="65" selection-end-line="14" selection-end-column="65" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source_files/util.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3348">
+          <caret line="234" column="13" lean-forward="true" selection-start-line="234" selection-start-column="13" selection-end-line="234" selection-end-column="13" />
+          <folding>
+            <element signature="e#44#63#0" expanded="true" />
           </folding>
         </state>
       </provider>
