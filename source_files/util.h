@@ -5,7 +5,10 @@
 
 typedef enum Boolean {false, true} Boolean;
 
+int isSortedArray(Record *record_array, int records, int fieldNo);
 void printRecord(Record* recordptr);
+void copy_record(Record *dest, Record *src);
+int compare_records(Record record1, Record record2, int fieldNo);
 
 void int_quickSort( Record *record_array, int l, int r);
 void string_quickSort( Record* record_array, int l, int r);
