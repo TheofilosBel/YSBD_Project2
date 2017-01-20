@@ -466,7 +466,7 @@ int Sorted_checkSortedFile(char *filename, int fieldNo) {
 
         /* Check if the array is sorted */
         isSorted = isSortedArray(record_array, records, fieldNo);
-        if (isSorted == 0) {
+        if (isSorted == -1) {
             printf("File %s is not sorted.\n", filename);
             return -1;
         }
