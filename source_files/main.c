@@ -67,25 +67,25 @@ int main(int argc, char **argv) {
     //printDebug(fd);
 
     //sort heap file using 2-way merge-sort
-
+    /*
     if (Sorted_SortFile(fileName,0) == -1  )
         printf("Error sorting file!\n");
     
     if (Sorted_checkSortedFile("heapFile", 0) == -1  )
         printf("Error sorting file!\n");
-    
+    */
     //get all entries with value
     //char value[20];
     //strcpy(value, "Keratsini");
-    /*
+
     fieldNo = 0;
-    int value = 11903588;
-    
+    int value = 11903588;    
+/*
     fd = Sorted_OpenFile("heapFileSorted0");
     if( fd == -1  )
         printf("Error opening file!\n");
-    
-    Sorted_GetAllEntries(fd,&fieldNo,&value) 
-    */
+*/
+    Sorted_GetAllEntries(fd,&fieldNo,&value);
+
     return EXIT_SUCCESS;
 }

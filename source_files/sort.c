@@ -488,7 +488,7 @@ int Sorted_checkSortedFile(char *filename, int fieldNo) {
 }
 
 int Sorted_GetAllEntries(int fileDesc, int *fieldNo, void *value) {
-    BlockInfo tempInfo;
+    BlockInfo block_info;
     void *block;
     int offset;
     int blockIndex = 1;
@@ -504,11 +504,11 @@ int Sorted_GetAllEntries(int fileDesc, int *fieldNo, void *value) {
             }
 
             /* Get its info */
-            memcpy(&tempInfo, block, sizeof(BlockInfo));
+            memcpy(&block_info, block, sizeof(BlockInfo));
             offset = sizeof(BlockInfo);
 
             /* Print the block's records */
-            while (offset < tempInfo.bytesInBlock) {
+            while (offset < block_info.bytesInBlock) {
                 memcpy(&recordTemp, block + offset, sizeof(Record));
                 offset += sizeof(Record);
                 printRecord(&recordTemp);
@@ -518,7 +518,22 @@ int Sorted_GetAllEntries(int fileDesc, int *fieldNo, void *value) {
         }
     }
     else {
-        /* Print only the required records */
+        /* Count the records in the last block */
+        if (BF_ReadBlock(fileDesc, BF_GetBlockCounter(fileDesc) - 1, &block) < 0) {
+            BF_PrintError("Error at Sorted_GetAllEntries, when getting block: ");
+            return -1;
+        }
+        memcpy(&block_info, block, sizeof(BlockInfo));
+        
+        int recordsInLastBlock = (block_info.bytesInBlock - sizeof(BlockInfo)) / sizeof(Record);
+        int recordsPerFullBlock = (BLOCK_SIZE - sizeof(BlockInfo)) / sizeof(Record);
+        int recordsInFile = (BF_GetBlockCounter(fileDesc) - 2) * recordsPerFullBlock + recordsInLastBlock;
+
+        printf("================================\n");
+        printDebug(fileDesc);
+        printf("rpb%d\n", recordsPerFullBlock);
+        printf("rlb%d\n", recordsInLastBlock);
+        printf("r = %d\n", recordsInFile);
     }
 
     return 0;
