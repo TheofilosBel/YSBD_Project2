@@ -518,6 +518,17 @@ int Sorted_GetAllEntries(int fileDesc, int *fieldNo, void *value) {
         }
     }
     else {
+        /* Cast the value */
+        int int_value;
+        char str_value[25];
+
+        if (*fieldNo == 0) {
+            int_value = *((int *)value);
+        }
+        else {
+            strcpy(str_value, (char *)value);
+        }
+
         /* Count the records in the last block */
         if (BF_ReadBlock(fileDesc, BF_GetBlockCounter(fileDesc) - 1, &block) < 0) {
             BF_PrintError("Error at Sorted_GetAllEntries, when getting block: ");
@@ -525,15 +536,49 @@ int Sorted_GetAllEntries(int fileDesc, int *fieldNo, void *value) {
         }
         memcpy(&block_info, block, sizeof(BlockInfo));
         
+        /* Count all the records in the file */
         int recordsInLastBlock = (block_info.bytesInBlock - sizeof(BlockInfo)) / sizeof(Record);
         int recordsPerFullBlock = (BLOCK_SIZE - sizeof(BlockInfo)) / sizeof(Record);
         int recordsInFile = (BF_GetBlockCounter(fileDesc) - 2) * recordsPerFullBlock + recordsInLastBlock;
 
         printf("================================\n");
-        printDebug(fileDesc);
-        printf("rpb%d\n", recordsPerFullBlock);
-        printf("rlb%d\n", recordsInLastBlock);
         printf("r = %d\n", recordsInFile);
+
+        /* Binary search */
+        int lowerBound = 1;
+        int upperBound = recordsInFile;
+        int midPoint;
+        int midPointBlockIndex;
+        int offset;
+
+        while (lowerBound <= upperBound) {
+            midPoint = lowerBound + (upperBound - lowerBound) / 2;
+            //printf("mid = %d\n", midPoint);
+            midPointBlockIndex = ((midPoint - 1) / recordsPerFullBlock) + 1;
+            offset = (midPoint - 1) % recordsPerFullBlock;
+
+            /* Read the block of the midpoint record */
+            if (BF_ReadBlock(fileDesc, midPointBlockIndex, &block) < 0) {
+                BF_PrintError("Error at Sorted_GetAllEntries, when getting block: ");
+                return -1;
+            }
+
+            memcpy(&recordTemp, block + sizeof(BlockInfo) + offset*sizeof(Record), sizeof(Record));
+            
+            /* Compare the record with the given value */
+            if (*fieldNo == 0) {
+                if (int_value < recordTemp.id) {
+                    upperBound = midPoint - 1;
+                }
+                else if (int_value > recordTemp.id) {
+                    lowerBound = midPoint + 1;
+                }
+                else {
+                    printRecord(&recordTemp);
+                    break;
+                }
+            }
+        }
     }
 
     return 0;

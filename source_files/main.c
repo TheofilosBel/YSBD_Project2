@@ -70,8 +70,8 @@ int main(int argc, char **argv) {
     /*
     if (Sorted_SortFile(fileName,0) == -1  )
         printf("Error sorting file!\n");
-    
-    if (Sorted_checkSortedFile("heapFile", 0) == -1  )
+        
+    if (Sorted_checkSortedFile("4temp1", 0) == -1  )
         printf("Error sorting file!\n");
     */
     //get all entries with value
