@@ -36,7 +36,7 @@ int lenfinder(int x) {
 int isSortedArray(Record *record_array, int records, int fieldNo) {
     int i;
 
-    for (i = 0; i < records; i++) {
+    for (i = 0; i < records-1; i++) {
         if (compare_records(record_array[i], record_array[i+1], fieldNo) == 1) {
             return -1;
         }
