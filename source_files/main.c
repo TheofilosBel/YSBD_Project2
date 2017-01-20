@@ -50,7 +50,7 @@ void insert_Entries(int fd) {
 
 int main(int argc, char **argv) {
     int fd;
-    int fieldNo;
+    int fieldNo = 1;
    
     BF_Init();
 
@@ -68,10 +68,10 @@ int main(int argc, char **argv) {
 
     //sort heap file using 2-way merge-sort
 
-    if (Sorted_SortFile(fileName,0) == -1  )
+    if (Sorted_SortFile(fileName,fieldNo ) == -1  )
         printf("Error sorting file!\n");
     
-    if (Sorted_checkSortedFile("heapFileSorted0", 0) == -1  )
+    if (Sorted_checkSortedFile("heapFileSorted1", fieldNo ) == -1  )
         printf("Error sorting file!\n");
     
     //get all entries with value

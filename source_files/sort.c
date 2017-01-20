@@ -261,7 +261,7 @@ int Sorted_SortFile(char *filename, int fieldNo) {
         if ( fieldNo == 0 ) {
             int_quickSort(record_array, 0, records - 1);
         } else {
-            string_quickSort(record_array, 0, records - 1);
+            string_quickSort(record_array, 0, records - 1, fieldNo);
         }
 
         /* Write back the records */
@@ -288,7 +288,7 @@ int Sorted_SortFile(char *filename, int fieldNo) {
 
     /* Initialize vars */
     num_of_files = BF_GetBlockCounter(file_desc_father) - 1;  /* -1 also for block 0*/
-    printf("Num of files %d\n", num_of_files);
+    //printf("Num of files %d\n", num_of_files);
 
 
     /* Create the files needed for stage 2 */
@@ -296,7 +296,7 @@ int Sorted_SortFile(char *filename, int fieldNo) {
 
         /* Create the file name */
         file_name = make_file_name(stage, file);
-        printf("File name is %s\n", file_name);
+        //printf("File name is %s\n", file_name);
 
         /* Create a new BF file */
         Sorted_CreateFile(file_name);
@@ -343,7 +343,7 @@ int Sorted_SortFile(char *filename, int fieldNo) {
 
     Sorted_CloseFile(file_desc_father);
 
-    printf("\n\nGoing to stage 2---------------\n\n");
+    //printf("\n\nGoing to stage 2---------------\n\n");
 
     while (num_of_files != 0 && num_of_files != 1) {
 
@@ -358,10 +358,12 @@ int Sorted_SortFile(char *filename, int fieldNo) {
             file_name1 = make_file_name(stage, curr_file_1);
             file_name2 = make_file_name(stage, curr_file_2);
 
-            printf("Call merge for %s + %s\n", file_name1, file_name2);
+            //printf("Call merge for %s + %s\n", file_name1, file_name2);
+
+            /* Merge the 2 files */
             file_name = merge_files(file_name1, file_name2, fieldNo);
-            printf("%s + %s -> %s\n\n", file_name1, file_name2, file_name);
-            fflush(stdout);
+            //printf("%s + %s -> %s\n\n", file_name1, file_name2, file_name);
+
 
             /* update the curr files indices */
             curr_file_1 += 2;
@@ -381,7 +383,7 @@ int Sorted_SortFile(char *filename, int fieldNo) {
             /* Make the new filename so it fits for the next stage */
             file_name = make_file_name(stage + 1, (num_of_files+1)/2);
 
-            printf("New file name %s\n", file_name);
+            //printf("New file name %s\n", file_name);
 
             /* Rename it */
             if(rename(file_name1, file_name) != 0) {
@@ -412,7 +414,7 @@ int Sorted_SortFile(char *filename, int fieldNo) {
     }
 
     sprintf(file_name, "%sSorted%d", filename, fieldNo);
-    printf("New file is %s and old %s\n", file_name, file_name1);
+    //printf("New file is %s and old %s\n", file_name, file_name1);
 
     if(rename(file_name1, file_name) != 0) {
         printf("Error: unable to rename the file");
