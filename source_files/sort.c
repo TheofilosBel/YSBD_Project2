@@ -390,10 +390,31 @@ int Sorted_SortFile(char *filename, int fieldNo) {
             /* Free */
             free(file_name1);
             free(file_name2);
+            free(file_name);
+        }
+        /* In case of an odd file_number add the last file to the next stage */
+        if (num_of_files % 2 != 0) {
+
+            /* Make the last files name */
+            file_name1 = make_file_name(stage, num_of_files);
+
+            /* Make the new filename so it fits for the next stage */
+            file_name = make_file_name(stage + 1, (num_of_files+1)/2);
+
+            printf("New file name %s\n", file_name);
+
+            /* Rename it */
+            if(rename(file_name1, file_name) != 0) {
+                printf("Error: unable to rename the file");
+            }
+
+            /* Free */
+            free(file_name1);
+            free(file_name);
         }
 
         /* Update the number of files for the next stage and the stage */
-        num_of_files = num_of_files / 2 ; //+ num_of_files % 2;
+        num_of_files = num_of_files / 2 + num_of_files % 2;
         //num_of_files = 0;
         stage++;
     }
