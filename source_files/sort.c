@@ -261,7 +261,7 @@ int Sorted_SortFile(char *filename, int fieldNo) {
         if ( fieldNo == 0 ) {
             int_quickSort(record_array, 0, records - 1);
         } else {
-            string_quickSort(record_array, 0, records - 1);
+            string_quickSort(record_array, 0, records - 1, fieldNo);
         }
 
         /* Write back the records */
@@ -288,7 +288,7 @@ int Sorted_SortFile(char *filename, int fieldNo) {
 
     /* Initialize vars */
     num_of_files = BF_GetBlockCounter(file_desc_father) - 1;  /* -1 also for block 0*/
-    printf("Num of files %d\n", num_of_files);
+    //printf("Num of files %d\n", num_of_files);
 
 
     /* Create the files needed for stage 2 */
@@ -296,7 +296,7 @@ int Sorted_SortFile(char *filename, int fieldNo) {
 
         /* Create the file name */
         file_name = make_file_name(stage, file);
-        printf("File name is %s\n", file_name);
+        //printf("File name is %s\n", file_name);
 
         /* Create a new BF file */
         Sorted_CreateFile(file_name);
@@ -308,32 +308,12 @@ int Sorted_SortFile(char *filename, int fieldNo) {
          * That block would be file_num block of father's file
          */
 
-        //printDebug(file_desc_father);
-
         /* Read father's file block */
         if (BF_ReadBlock(file_desc_father, file, &block) < 0) {
             BF_PrintError("Error at Sorted_ShortFile, when getting block: ");
             exit(-1);
         }
 
-        /* Print block */
-/*
-        Record record;
-        int offset1 = 0;
-        printf("----------------------------------------\n");
-        memcpy(&block_info, block, sizeof(BlockInfo));
-        printf("Block %d - bytesInBlock = %d\n\n", file, block_info.bytesInBlock);
-        offset1 += sizeof(BlockInfo);
-
-        while (offset1 < block_info.bytesInBlock) {
-            memcpy(&record, block + offset1, sizeof(Record));
-            offset1 += sizeof(Record);
-            printRecord(&record);
-        }
-
-        memcpy(&block_info, block, sizeof(BlockInfo));
-        printf("File %d, and info from fathers %d\n", file, block_info.bytesInBlock);
-*/
         /* Allocate size for one block */
         if ( BF_AllocateBlock(curr_file_1) != 0) {
             perror("Error , at Sorted_ShortFile when allocating block\n");
@@ -363,9 +343,9 @@ int Sorted_SortFile(char *filename, int fieldNo) {
 
     Sorted_CloseFile(file_desc_father);
 
-    printf("\n\nGoing to stage 2---------------\n\n");
+    //printf("\n\nGoing to stage 2---------------\n\n");
 
-    while (num_of_files != 0) {
+    while (num_of_files != 0 && num_of_files != 1) {
 
         /* Pick the 2 files for merging */
         curr_file_1 = 1;
@@ -378,10 +358,12 @@ int Sorted_SortFile(char *filename, int fieldNo) {
             file_name1 = make_file_name(stage, curr_file_1);
             file_name2 = make_file_name(stage, curr_file_2);
 
-            printf("Call merge for %s + %s\n", file_name1, file_name2);
+            //printf("Call merge for %s + %s\n", file_name1, file_name2);
+
+            /* Merge the 2 files */
             file_name = merge_files(file_name1, file_name2, fieldNo);
-            printf("%s + %s -> %s\n\n", file_name1, file_name2, file_name);
-            fflush(stdout);
+            //printf("%s + %s -> %s\n\n", file_name1, file_name2, file_name);
+
 
             /* update the curr files indices */
             curr_file_1 += 2;
@@ -390,13 +372,57 @@ int Sorted_SortFile(char *filename, int fieldNo) {
             /* Free */
             free(file_name1);
             free(file_name2);
+            free(file_name);
+        }
+        /* In case of an odd file_number add the last file to the next stage */
+        if (num_of_files % 2 != 0) {
+
+            /* Make the last files name */
+            file_name1 = make_file_name(stage, num_of_files);
+
+            /* Make the new filename so it fits for the next stage */
+            file_name = make_file_name(stage + 1, (num_of_files+1)/2);
+
+            //printf("New file name %s\n", file_name);
+
+            /* Rename it */
+            if(rename(file_name1, file_name) != 0) {
+                printf("Error: unable to rename the file");
+            }
+
+            /* Free */
+            free(file_name1);
+            free(file_name);
         }
 
         /* Update the number of files for the next stage and the stage */
-        num_of_files = num_of_files / 2 ; //+ num_of_files % 2;
-        //num_of_files = 0;
+        num_of_files = num_of_files / 2 + num_of_files % 2;
         stage++;
     }
+
+    /* Rename the last created file to
+     * <filename>Sorted<fielNo>
+     * */
+
+    /* Get the last file name created */
+    file_name1 = make_file_name(stage, 1);
+
+    /* make the new file_name */
+    file_name = malloc(sizeof(char)*(strlen(filename) + strlen("Sorted") + lenfinder(fieldNo)));
+    if (file_name == NULL) {
+        perror("Error in Sorted_SrortFile");
+    }
+
+    sprintf(file_name, "%sSorted%d", filename, fieldNo);
+    //printf("New file is %s and old %s\n", file_name, file_name1);
+
+    if(rename(file_name1, file_name) != 0) {
+        printf("Error: unable to rename the file");
+    }
+
+    /* Free */
+    free(file_name);
+    free(file_name1);
 
     return 0;
 }
@@ -416,6 +442,7 @@ int Sorted_checkSortedFile(char *filename, int fieldNo) {
         BF_PrintError("Error at Sorted_checkSortedFile, when opening file: ");
         return -1;
     }
+
 
     /*
      * The file should have at least two blocks
@@ -489,6 +516,7 @@ int Sorted_checkSortedFile(char *filename, int fieldNo) {
 
 int Sorted_GetAllEntries(int fileDesc, int *fieldNo, void *value) {
     BlockInfo block_info;
+    int blockInfoSize = sizeof(BlockInfo);
     void *block;
     int offset;
     int blockIndex = 1;
@@ -518,17 +546,6 @@ int Sorted_GetAllEntries(int fileDesc, int *fieldNo, void *value) {
         }
     }
     else {
-        /* Cast the value */
-        int int_value;
-        char str_value[25];
-
-        if (*fieldNo == 0) {
-            int_value = *((int *)value);
-        }
-        else {
-            strcpy(str_value, (char *)value);
-        }
-
         /* Count the records in the last block */
         if (BF_ReadBlock(fileDesc, BF_GetBlockCounter(fileDesc) - 1, &block) < 0) {
             BF_PrintError("Error at Sorted_GetAllEntries, when getting block: ");
@@ -541,21 +558,19 @@ int Sorted_GetAllEntries(int fileDesc, int *fieldNo, void *value) {
         int recordsPerFullBlock = (BLOCK_SIZE - sizeof(BlockInfo)) / sizeof(Record);
         int recordsInFile = (BF_GetBlockCounter(fileDesc) - 2) * recordsPerFullBlock + recordsInLastBlock;
 
-        printf("================================\n");
-        printf("r = %d\n", recordsInFile);
-
         /* Binary search */
         int lowerBound = 1;
         int upperBound = recordsInFile;
         int midPoint;
         int midPointBlockIndex;
-        int offset;
+        int offset, midPointOffset;
+        int recordFound = 0;
+        int stopScanning = 0;
 
         while (lowerBound <= upperBound) {
             midPoint = lowerBound + (upperBound - lowerBound) / 2;
-            //printf("mid = %d\n", midPoint);
             midPointBlockIndex = ((midPoint - 1) / recordsPerFullBlock) + 1;
-            offset = (midPoint - 1) % recordsPerFullBlock;
+            midPointOffset = (midPoint - 1) % recordsPerFullBlock;
 
             /* Read the block of the midpoint record */
             if (BF_ReadBlock(fileDesc, midPointBlockIndex, &block) < 0) {
@@ -563,21 +578,152 @@ int Sorted_GetAllEntries(int fileDesc, int *fieldNo, void *value) {
                 return -1;
             }
 
-            memcpy(&recordTemp, block + sizeof(BlockInfo) + offset*sizeof(Record), sizeof(Record));
+            memcpy(&recordTemp, block + sizeof(BlockInfo) + midPointOffset*sizeof(Record), sizeof(Record));
             
             /* Compare the record with the given value */
-            if (*fieldNo == 0) {
-                if (int_value < recordTemp.id) {
-                    upperBound = midPoint - 1;
+            if (compare_value_to_record(value, recordTemp, *fieldNo) == -1) {
+                upperBound = midPoint - 1;
+            }
+            else if (compare_value_to_record(value, recordTemp, *fieldNo) == 1) {
+                lowerBound = midPoint + 1;
+            }
+            else {
+                recordFound = 1;
+                printRecord(&recordTemp);
+                break;
+            }
+        }
+
+        if (recordFound == 1) {
+            if (*fieldNo != 0) {
+                /* Fields other than id are not unique */
+                /* Scan backwards for possible same values */
+                int goToPreviousBlock = 1;
+                /* Go to the previous record */
+                offset = sizeof(BlockInfo) + midPointOffset*sizeof(Record);
+                offset -= sizeof(Record);
+
+                /* Scan the current block backwards */
+                while (offset >= blockInfoSize) {
+                    memcpy(&recordTemp, block + offset, sizeof(Record));
+                
+                    if (compare_value_to_record(value, recordTemp, *fieldNo) == 0) {
+                        printRecord(&recordTemp);
+                    }
+                    else {
+                        goToPreviousBlock = 0;
+                        break;
+                    }
+
+                    offset -= sizeof(Record);
                 }
-                else if (int_value > recordTemp.id) {
-                    lowerBound = midPoint + 1;
+
+                /* Scan previous blocks backwards */
+                if (goToPreviousBlock == 1) {
+                    blockIndex = midPointBlockIndex - 1;
+
+                    while (blockIndex > 0) {
+                        /* Read the previous block */
+                        if (BF_ReadBlock(fileDesc, blockIndex, &block) < 0) {
+                            BF_PrintError("Error at Sorted_GetAllEntries, when getting block: ");
+                            return -1;
+                        }
+
+                        memcpy(&block_info, block, sizeof(BlockInfo));
+                        /* Scan the records backwards */
+                        offset = block_info.bytesInBlock - sizeof(Record);
+
+                        while (offset >= blockInfoSize) {
+                            memcpy(&recordTemp, block + offset, sizeof(Record));
+
+                            if (compare_value_to_record(value, recordTemp, *fieldNo) == 0) {
+                                printRecord(&recordTemp);
+                            }
+                            else {
+                                stopScanning = 1;
+                                break;
+                            }
+
+                            offset -= sizeof(Record);
+                        }
+
+                        if (stopScanning == 1) {
+                            stopScanning = 0;
+                            break;
+                        }
+
+                        blockIndex--;
+                    }
                 }
-                else {
-                    printRecord(&recordTemp);
-                    break;
+
+                /* Read the block of the midpoint record */
+                if (BF_ReadBlock(fileDesc, midPointBlockIndex, &block) < 0) {
+                    BF_PrintError("Error at Sorted_GetAllEntries, when getting block: ");
+                    return -1;
+                }
+                memcpy(&block_info, block, sizeof(BlockInfo));
+
+                /* Scan forward for possible same values */
+                int goToNextBlock = 1;
+                /* Go to the next record */
+                offset = sizeof(BlockInfo) + midPointOffset*sizeof(Record);
+                offset += sizeof(Record);
+
+                /* Scan the current block forward */
+                while (offset < block_info.bytesInBlock) {
+                    memcpy(&recordTemp, block + offset, sizeof(Record));
+
+                    if (compare_value_to_record(value, recordTemp, *fieldNo) == 0) {
+                        printRecord(&recordTemp);
+                    }
+                    else {
+                        goToNextBlock = 0;
+                        break;
+                    }
+
+                    offset += sizeof(Record);
+                }
+
+                /* Scan previous blocks backwards */
+                if (goToNextBlock == 1) {
+                    blockIndex = midPointBlockIndex + 1;
+
+                    while (blockIndex < BF_GetBlockCounter(fileDesc)) {
+                        /* Read the next block */
+                        if (BF_ReadBlock(fileDesc, blockIndex, &block) < 0) {
+                            BF_PrintError("Error at Sorted_GetAllEntries, when getting block: ");
+                            return -1;
+                        }
+
+                        memcpy(&block_info, block, sizeof(BlockInfo));
+                        /* Scan the records forward */
+                        offset = blockInfoSize;
+
+                        while (offset < block_info.bytesInBlock) {
+                            memcpy(&recordTemp, block + offset, sizeof(Record));
+
+                            if (compare_value_to_record(value, recordTemp, *fieldNo) == 0) {
+                                printRecord(&recordTemp);
+                            }
+                            else {
+                                stopScanning = 1;
+                                break;
+                            }
+
+                            offset += sizeof(Record);
+                        }
+
+                        if (stopScanning == 1) {
+                            break;
+                        }
+
+                        blockIndex++;
+                    }
                 }
             }
+        }
+        else {
+            printf("A record with the given value does not exist.\n");
         }
     }
 

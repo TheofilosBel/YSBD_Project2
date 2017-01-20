@@ -50,10 +50,9 @@ void insert_Entries(int fd) {
 
 int main(int argc, char **argv) {
     int fd;
-    int fieldNo;
+    int fieldNo = 3;
    
     BF_Init();
-
 
     //create heap file
     if (Sorted_CreateFile(fileName) == -1)
@@ -64,27 +63,28 @@ int main(int argc, char **argv) {
         printf("Error opening file!\n");
     insert_Entries(fd);
 
-    //printDebug(fd);
-
     //sort heap file using 2-way merge-sort
-    /*
-    if (Sorted_SortFile(fileName,0) == -1  )
-        printf("Error sorting file!\n");
-        
-    if (Sorted_checkSortedFile("4temp1", 0) == -1  )
-        printf("Error sorting file!\n");
-    */
-    //get all entries with value
-    //char value[20];
-    //strcpy(value, "Keratsini");
 
-    fieldNo = 0;
-    int value = 11903588;    
-/*
-    fd = Sorted_OpenFile("heapFileSorted0");
+    if (Sorted_SortFile(fileName,fieldNo ) == -1  )
+        printf("Error sorting file!\n");
+    
+    if (Sorted_checkSortedFile("heapFileSorted3", fieldNo ) == -1  )
+        printf("Error sorting file!\n");
+    
+    //get all entries with value
+    char value[20];
+    strcpy(value, "Keratsini");
+
+    //fieldNo = 0;
+    //int value = 11903588;    
+
+    fd = Sorted_OpenFile("heapFileSorted3");
     if( fd == -1  )
         printf("Error opening file!\n");
-*/
+
+    printDebug(fd);
+
+    printf("====================\n");
     Sorted_GetAllEntries(fd,&fieldNo,&value);
 
     return EXIT_SUCCESS;

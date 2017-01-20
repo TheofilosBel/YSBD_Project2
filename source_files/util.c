@@ -101,6 +101,46 @@ int compare_records(Record record1, Record record2, int fieldNo) {
     }
 }
 
+int compare_value_to_record(void *value, Record record, int fieldNo) {
+    /* --------------------------------
+     * Compare value with record2
+     * depending on the filedNo
+     * Return : -1 if value < record2
+     * Return : 0 if value = record2
+     * Return : 1 if value > record2
+     * -------------------------------- */
+
+    /* Cast the value to an int or string */
+    int int_value;
+    char str_value[25];
+
+    if (fieldNo == 0) {
+        int_value = *((int *)value);
+    }
+    else {
+        strcpy(str_value, (char *)value);
+    }
+
+    /* if fieldNo == 0 compare ints else compare strings */
+    if (fieldNo == 0){
+        if (int_value > record.id) return 1;
+        else if (int_value == record.id) return 0;
+        else return -1;
+    } else if (fieldNo == 1) {
+        if (strcmp(str_value, record.name) > 0) return 1;
+        else if (strcmp(str_value, record.name) == 0) return 0;
+        else return -1;
+    } else if (fieldNo == 2) {
+        if (strcmp(str_value, record.surname) > 0) return 1;
+        else if (strcmp(str_value, record.surname) == 0) return 0;
+        else return -1;
+    } else {
+        if (strcmp(str_value, record.city) > 0) return 1;
+        else if (strcmp(str_value, record.city) == 0) return 0;
+        else return -1;
+    }
+}
+
 void copy_record(Record *dest, Record *src) {
     /* -----------------
      * Copy src to dest.
@@ -124,6 +164,7 @@ int int_partition( Record *record_array, int l, int r) {
 
     while( 1)
     {
+
         do i++; while( record_array[i].id < pivot  && i <= r );
         do j--; while( record_array[j].id > pivot);
         if( i >= j ) break;
@@ -150,7 +191,7 @@ void int_quickSort( Record *record_array, int l, int r)
 }
 
 
-int string_partition( Record *record_array, int l, int r) {
+int string_partition( Record *record_array, int l, int r, int fieldNo) {
 /* ------------------------------
      * Partition the array , and put
      * everything in the right place.
@@ -160,13 +201,32 @@ int string_partition( Record *record_array, int l, int r) {
 
     i = l; j = r+1;
 
-    pivot = record_array[l].surname;
+    if (fieldNo == 1) {
+        pivot = record_array[l].name;
+    } else if (fieldNo == 2) {
+        pivot = record_array[l].surname;
+    } else { /* if (fieldNo == 3) */
+        pivot = record_array[l].city;
+    }
 
     while( 1)
     {
-        do i++; while( strcmp(record_array[i].surname, pivot) <= 0  && i <= r );
-        do j--; while( strcmp(record_array[j].surname, pivot) > 0 );
-        if( i >= j ) break;
+
+        if (fieldNo == 1) {
+            do i++; while( strcmp(record_array[i].name, pivot) <= 0  && i <= r );
+            do j--; while( strcmp(record_array[j].name, pivot) > 0 );
+            if( i >= j ) break;
+
+        } else if (fieldNo == 2) {
+            do i++; while( strcmp(record_array[i].surname, pivot) <= 0  && i <= r );
+            do j--; while( strcmp(record_array[j].surname, pivot) > 0 );
+            if( i >= j ) break;
+
+        } else { /* if (fieldNo == 3) */
+            do i++; while( strcmp(record_array[i].city, pivot) <= 0  && i <= r );
+            do j--; while( strcmp(record_array[j].city, pivot) > 0 );
+            if( i >= j ) break;
+        }
 
         swap_records(record_array, i, j);
     }
@@ -175,16 +235,16 @@ int string_partition( Record *record_array, int l, int r) {
     return j;
 }
 
-void string_quickSort( Record *record_array, int l, int r)
+void string_quickSort( Record *record_array, int l, int r, int fieldNo)
 {
     int j;
 
     if( l < r )
     {
         // divide and conquer
-        j = string_partition( record_array, l, r);
-        string_quickSort( record_array, l, j-1);
-        string_quickSort( record_array, j+1, r);
+        j = string_partition( record_array, l, r, fieldNo);
+        string_quickSort( record_array, l, j-1, fieldNo);
+        string_quickSort( record_array, j+1, r, fieldNo);
     }
 
 }
@@ -213,70 +273,6 @@ char* make_file_name(int stage, int file_num) {
 
 /*-=-=-=-=-=-=-=-=-=- Merging Functions -=-=-=-=-=-=-=-=-=-*/
 
-Record *merge_arrays(Record *array1, int size1, Record *array2, int size2, int fieldNo) {
-    /* -------------------------------
-     * Merge the arrays in an new one
-     * with size size1+size2.
-     * The arrays are sorted!!!
-     * -------------------------------*/
-
-    Record *merged_array;
-    int recs_writen1 = 0, recs_writen2 = 0, recs_in_merged = 0;
-
-    /* Initialize the 3rd array */
-    if ((merged_array = malloc(sizeof(Record)*(size1+size2))) == NULL) {
-        perror("Error in merge_arrays , when allocating mem");
-    }
-    //printf("In merge array\n\n");
-
-    while (recs_writen1 < size1 || recs_writen2 < size2) {
-
-        /* Both arrays still have records */
-        if (recs_writen1 < size1 && recs_writen2 < size2) {
-            if (compare_records(array1[recs_writen1], array2[recs_writen2], fieldNo) <= 0) {
-
-                /* Writhe record to merge_array */
-                copy_record(&merged_array[recs_in_merged], &array1[recs_writen1]);
-                recs_writen1++;
-            } else {/* ( record 1 > record 2 )*/
-
-                /* Writhe record to merge_array */
-                copy_record(&merged_array[recs_in_merged], &array2[recs_writen2]);
-                recs_writen2++;
-            }
-
-            /* Update the indices */
-            recs_in_merged++;
-        }
-        /* Array 1 has more records than array 2 */
-        else if (recs_writen1 < size1 && recs_writen2 == size2 ) {
-
-            /* Writhe record to merge_array */
-            copy_record(&merged_array[recs_in_merged], &array1[recs_writen1]);
-            recs_writen1++;
-            recs_in_merged++;
-        }
-        /* Array 2 has more records than array 1 */
-        else if (recs_writen2 < size2 && recs_writen1 == size1 ) {
-
-            /* Writhe record to merge_array */
-            copy_record(&merged_array[recs_in_merged], &array2[recs_writen2]);
-            recs_writen2++;
-            recs_in_merged++;
-        }
-
-
-        /*printf("We have size1=%d, size2=%d, recs1=%d, recs2=%d, merged_recs=%d\n", size1, size2,recs_writen1,recs_writen2,recs_in_merged);
-        for (int x = 0 ; x < size1+size2 ; x++) {
-            printRecord(&merged_array[x]);
-        }*/
-
-    }
-
-    return merged_array;
-
-}
-
 char *merge_files(char *file_name1, char *file_name2, int fieldNo) {
     /* ------------------------------
      * Merge the 2 files into 1 and
@@ -284,13 +280,11 @@ char *merge_files(char *file_name1, char *file_name2, int fieldNo) {
      * newly created file.
      * -----------------------------*/
 
-    Record *array1, *array2, *new_array;
+    Record *array_f1, *array_f2, *merged_array;
     BlockInfo *blockInfo;
     int file_desc1, file_desc2, file_desc_new;
-    int block_index1, block_index2, new_block_index;
-    int block_for_merge1, block_for_merge2;
-    int two_blocks_found;
-    int old_stage, old_num, size1, size2;
+    int block_index_f1, block_index_f2 ;
+    int old_stage, old_num, size1 = 0, size2 = 0;
     char *file_name;
     void *block1, *block2;
 
@@ -326,249 +320,207 @@ char *merge_files(char *file_name1, char *file_name2, int fieldNo) {
 
     /* Initialize */
     int end_of_blocks_f1 = 0, end_of_blocks_f2 = 0;
-    int from_f1 = 0 , from_f2 = 0;
-    int file_for_block_1 = 0 , file_for_block_2 = 0;
-    int from_f1_counter = 0, from_f2_counter = 0;
-    block_index1 = 1;
-    block_index2 = 1;
-    new_block_index = 0;
+    int recs_writen_fromf1 = 0, recs_writen_fromf2 = 0, recs_in_merged = 0;
+    int block_f1_done = 0 , block_f2_done = 0;
 
-    printf("+-+-+-+-+-+-File %s , blocks :%d + File %s blocks :%d+-+-+-+-+-+-+-+\n",file_name1,BF_GetBlockCounter(file_desc1) ,file_name2, BF_GetBlockCounter(file_desc2));
-    printDebug(file_desc1);
-    printDebug(file_desc2);
-    printf("+-+-+-+-+-+-+-+||+-+-+-+-+-+-+-+\n");
+    block_index_f1 = 1;
+    block_index_f2 = 1;
 
-    /* Read the block 1 from both files */
-    if (BF_ReadBlock(file_desc1, block_index1, &block1) < 0 || BF_ReadBlock(file_desc2, block_index2, &block2) < 0) {
-        BF_PrintError("Error at merge_files, when getting blocks: ");
-        exit(-1);
-    }
+    //printf("+-+-+-+-+-+-File %s , blocks :%d + File %s blocks :%d+-+-+-+-+-+-+-+\n",file_name1,BF_GetBlockCounter(file_desc1) ,file_name2, BF_GetBlockCounter(file_desc2));
+    //printDebug(file_desc1);
+    //printDebug(file_desc2);
+    //printf("+-+-+-+-+-+-+-+||+-+-+-+-+-+-+-+\n");
 
-    /* Merge the files */
-    while(block_index1 <= BF_GetBlockCounter(file_desc1)-1 || block_index2 <= BF_GetBlockCounter(file_desc2)-1 ){
+    /* Initialize vars for the loop */
+    end_of_blocks_f1 = 0;
+    end_of_blocks_f2 = 0;
 
-        /* Initializing - Casting for the arrays */
-        array1 = (Record*)(block1 + sizeof(BlockInfo));
-        array2 = (Record*)(block2 + sizeof(BlockInfo));
+    /* Merge all the blocks from both files */
+    while(block_index_f1 <= BF_GetBlockCounter(file_desc1)-1 || block_index_f2 <= BF_GetBlockCounter(file_desc2)-1 ){
 
-        /* Find the right 2 blocks to merge */
-        from_f1_counter = 0;
-        from_f2_counter = 0;
-        block_for_merge1 = -1;
-        block_for_merge2 = -1;
-        file_for_block_1 = 0;
-        file_for_block_2 = 0;
-        end_of_blocks_f1 = 0;
-        end_of_blocks_f2 = 0;
-        while (from_f1_counter + from_f2_counter < 2) {
+        /* Initialize sizes to zero */
+        size1 = 0 ; size2 = 0;
 
-            printf("1: end1 %d, end2 %d , two %d, index1 %d , index2 %d\n",
-            end_of_blocks_f1, end_of_blocks_f2, two_blocks_found, block_index1, block_index2);
+        /* Initialize flags to zero */
+        block_f1_done = 0; block_f2_done = 0;
 
-            /* If no more blocks in one file , take from the other file */
-            if ( !end_of_blocks_f1 && !end_of_blocks_f2) {
 
-                /* Decide what blocks to take by comparing the first records of each block */
-                printf("Comparing :\n");
-                printRecord(&array1[0]);
-                printf("with:\n");
-                printRecord(&array2[0]);
-                if (compare_records(array1[0], array2[0], fieldNo) <= 0) {
+        /* Read block from file 1 it its exists */
+        if ( block_index_f1 <= BF_GetBlockCounter(file_desc1) - 1) {
 
-                    /* Keep the the blockIndex in one of the 2 variables */
-                    if ( block_for_merge1 != -1 ) {
-                        block_for_merge2 = block_index1;
-                        file_for_block_2 = file_desc1;
-                    } else {
-                        block_for_merge1 = block_index1;
-                        file_for_block_1 = file_desc1;
-                    }
-
-                    /* Update the flags */
-                    from_f1++;
-                    from_f1_counter++;
-
-                    /* Update indices */
-                    block_index1++;
-                } else {
-
-                    /* Keep the the blockIndex in one of the 2 variables */
-                    if ( block_for_merge2 != -1 ) {
-                        block_for_merge1 = block_index2;
-                        file_for_block_1 = file_desc2;
-                    } else {
-                        block_for_merge2 = block_index2;
-                        file_for_block_2 = file_desc2;
-                    }
-
-                    /* Update the flags */
-                    from_f2++;
-                    from_f2_counter++;
-
-                    /* Update indices */
-                    block_index2++;
-
-                }
-            } else if (end_of_blocks_f1) {
-
-                block_for_merge2 = block_index2;
-                file_for_block_2 = file_desc2;
-                block_index2++;
-                from_f2_counter++;
-                from_f2++;
-
-            } else if (end_of_blocks_f2) {
-
-                printf("here");
-                block_for_merge1 = block_index1;
-                file_for_block_1 = file_desc1;
-                block_index1++;
-                from_f1_counter++;
-                from_f1++;
+            if (BF_ReadBlock(file_desc1, block_index_f1, &block1) < 0) {
+                BF_PrintError("Error at merge_files, when getting blocks: ");
+                exit(-1);
             }
 
-            printf("From f1 %d, f2 %d\n", from_f1, from_f2);
-            /* Read the next block from the right file */
-            if (from_f1) {
+            /* Initializing - Casting for the arrays */
+            array_f1 = (Record*)(block1 + sizeof(BlockInfo));
 
-                /* Check if no more blocks */
-                if (block_index1 > BF_GetBlockCounter(file_desc1) - 1) {
-                    printf("skata\n");
-                    end_of_blocks_f1 = 1;
-                } else {
+            /* Find out the size of the array */
+            memcpy(blockInfo, block1, sizeof(BlockInfo));
+            size1 = (blockInfo->bytesInBlock - sizeof(BlockInfo)) / sizeof(Record);
 
-                    /* If its the second time to take block from file 1 then use array 2 */
-                    if (from_f1_counter == 2) {
+        } else {
+            end_of_blocks_f1 = 1;
+        }
 
-                        /* If the smaller was from file 1 then read the next from file 1 */
-                        if (BF_ReadBlock(file_desc1, block_index1, &block2) < 0) {
-                            BF_PrintError("Error at merge_files, when getting blocks: ");
-                            exit(-1);
-                        }
+        /* Read block from file 2 it it exists */
+        if (block_index_f2 <= BF_GetBlockCounter(file_desc2) - 1) {
 
-                        /* Initializing - Casting for the arrays */
-                        array2 = (Record *)(block2 + sizeof(BlockInfo));
-                    } else {
 
-                        printf("In from f1 in else \n");
-
-                        /* If the smaller was from file 1 then read the next from file 1 */
-                        if (BF_ReadBlock(file_desc1, block_index1, &block1) < 0) {
-                            BF_PrintError("Error at merge_files, when getting blocks: ");
-                            exit(-1);
-                        }
-
-                        /* And write it to the first array */
-                        array1 = (Record *)(block1 + sizeof(BlockInfo));
-
-                        printRecord(&array1[0]);
-                    }
-                }
-            } else if (from_f2) {
-
-                /* Check if no more blocks */
-                if (block_index2 > BF_GetBlockCounter(file_desc2) - 1) {
-                    printf("skata2\n");
-                    end_of_blocks_f2 = 1;
-                } else {
-
-                    /* If its the second time to take block from file 2 then use array 1 */
-                    if (from_f2_counter == 2) {
-
-                        /* If the smaller was from file 2 then read the next from file 2 */
-                        if (BF_ReadBlock(file_desc2, block_index2, &block1) < 0) {
-                            BF_PrintError("Error at merge_files, when getting blocks: ");
-                            exit(-1);
-                        }
-
-                        /* Initializing - Casting for the arrays */
-                        array1 = (Record *)(block1 + sizeof(BlockInfo));
-                    } else {
-
-                        printf("In from f2 in else \n");
-
-                        /* If the smaller was from file 2 then read the next from file 2 */
-                        if (BF_ReadBlock(file_desc2, block_index2, &block2) < 0) {
-                            BF_PrintError("Error at merge_files, when getting blocks: ");
-                            exit(-1);
-                        }
-
-                        /* Initializing - Casting for the arrays */
-                        array2 = (Record *)(block2 + sizeof(BlockInfo));
-                    }
-                }
+            if (BF_ReadBlock(file_desc2, block_index_f2, &block2) < 0) {
+                BF_PrintError("Error at merge_files, when getting blocks: ");
+                exit(-1);
             }
 
-            /* Update flags */
-            from_f1 = 0;
-            from_f2 = 0;
-        }
+            /* Initializing - Casting for the arrays */
+            array_f2 = (Record*)(block2 + sizeof(BlockInfo));
 
-        printf("Out of loop merge blocks are %d , %d,f %d ,f %d\n", block_for_merge1, block_for_merge2, file_for_block_1, file_for_block_2);
-        printf("1: end1 %d, end2 %d , two %d, index1 %d , index2 %d\n",
-               end_of_blocks_f1, end_of_blocks_f2, two_blocks_found, block_index1, block_index2);
 
-        /* Get the 2 blocks from the files */
-        if (BF_ReadBlock(file_for_block_1, block_for_merge1, &block1) < 0) {
-            BF_PrintError("Error at merge_files, when getting blocks: ");
-            exit(-1);
-        }
+            /* Find out the size of the arrays */
+            memcpy(blockInfo, block2, sizeof(BlockInfo));
+            size2 = (blockInfo->bytesInBlock - sizeof(BlockInfo)) / sizeof(Record);
 
-        if (BF_ReadBlock(file_for_block_2, block_for_merge2, &block2) < 0) {
-            BF_PrintError("Error at merge_files, when getting blocks: ");
-            exit(-1);
+        } else {
+            end_of_blocks_f2 = 1;
         }
 
 
-        /* Find out the size of the arrays */
-        memcpy(blockInfo, block1, sizeof(BlockInfo));
-        size1 = (blockInfo->bytesInBlock - sizeof(BlockInfo)) / sizeof(Record);
+        /* Merge in a new array and add it to file */
 
-        memcpy(blockInfo, block2, sizeof(BlockInfo));
-        size2 = (blockInfo->bytesInBlock - sizeof(BlockInfo)) / sizeof(Record);
-
-        /* Initialize array 1 & array 2 */
-        if (( array1 = malloc(sizeof(Record)*size1)) == NULL || (array2 = malloc(sizeof(Record)*size2)) == NULL) {
-            perror("Error in merge_files, when allocating mem");
+        /* Make an array to hold size1 + size 2*/
+        /* Initialize the merge array */
+        if ((merged_array = malloc(sizeof(Record)*(size1+size2))) == NULL) {
+            perror("Error in merge_files , when allocating mem");
         }
 
-        /* Take info for array 1 and array 2 */
-        memcpy(array1, block1 + sizeof(BlockInfo), sizeof(Record)*size1);
-        memcpy(array2, block2 + sizeof(BlockInfo), sizeof(Record)*size2);
+        //printf("Going to loop !! with :r1 %d , r2 %d , end1 %d , end2 %d\n", recs_writen_fromf1, recs_writen_fromf2,
+        //end_of_blocks_f1, end_of_blocks_f2);
+
+        while (recs_writen_fromf1 < size1 || recs_writen_fromf2 < size2) {
+
+            /* Both arrays still have records */
+            if (recs_writen_fromf1 < size1 && recs_writen_fromf2 < size2 && end_of_blocks_f1 != 1 && end_of_blocks_f2 != 1) {
+                if (compare_records(array_f1[recs_writen_fromf1], array_f2[recs_writen_fromf2], fieldNo) <= 0) {
+
+                    /* Writhe record to new file */
+                    Sorted_InsertEntry(file_desc_new, array_f1[recs_writen_fromf1]);
+
+                    recs_writen_fromf1++;
+                } else {/* ( record 1 > record 2 )*/
+
+                    /* Writhe record to new file */
+                    Sorted_InsertEntry(file_desc_new, array_f2[recs_writen_fromf2]);
+
+                    recs_writen_fromf2++;
+                }
+
+                /* Update the indices */
+                recs_in_merged++;
+            }
+                /* Array 1 has more records than array 2 or file 2 is done  */
+            else if (recs_writen_fromf1 < size1 && (recs_writen_fromf2 == size2 || end_of_blocks_f2 == 1)){
+
+                /* If file 2 has no more blocks*/
+                if (end_of_blocks_f2) {
+
+                    /* Writhe remaining records to new file from f1 */
+                    Sorted_InsertEntry(file_desc_new, array_f1[recs_writen_fromf1]);
+
+                    recs_writen_fromf1++;
+                    recs_in_merged++;
+
+                    /* check if we finished this block an we need to go to the next block for file 1*/
+                    if (recs_writen_fromf1 == size1){
+
+                        /* Increase the index - state that f1 blocks is done */
+                        block_index_f1++;
+                        block_f1_done = 1;
+                    }
+                } else {
+                    /* Else start again and take the next block from file f2 */
+
+                    /* Increase the index and state that f2 blocks is done */
+                    block_index_f2++;
+                    block_f2_done = 1;
+
+                    break;
+                }
+            }
+                /* Array 2 has more records than array 1 or file 1 is done  */
+            else if (recs_writen_fromf2 < size2 && (recs_writen_fromf1 == size1 || end_of_blocks_f1 == 1)) {
 
 
-        /* Merge the arrays and get the new one */
-        new_array = merge_arrays(array1, size1, array2, size2, fieldNo);
+                /* If file 2 has no more blocks*/
+                if (end_of_blocks_f1) {
 
-        /* Write the array to the new file using InsertEntry */
-        for (int record_num = 0; record_num < size1 + size2; record_num++ ) {
-            Sorted_InsertEntry(file_desc_new, new_array[record_num]);
+                    /* Writhe remaining records to new file from f2 */
+                    Sorted_InsertEntry(file_desc_new, array_f2[recs_writen_fromf2]);
+
+                    recs_writen_fromf2++;
+                    recs_in_merged++;
+
+                    /* check if we finished this block an we need to go to the next block for file 2*/
+                    if (recs_writen_fromf2 == size2){
+
+                        /* Increase the index - state that f1 blocks is done */
+                        block_index_f2++;
+                        block_f2_done = 1;
+                    }
+
+                } else {
+                    /* Else start again and take the next block from file f1 */
+
+                    /* Increase index f1*/
+                    block_index_f1++;
+
+                    block_f1_done = 1;
+                    break;
+                }
+
+            }
+
+
+            //printf("We have size1=%d, size2=%d, recs1=%d, recs2=%d, merged_recs=%d\n", size1, size2,recs_writen_fromf1,recs_writen_fromf2,recs_in_merged);
         }
 
-        printf("XXXXXXXXX-In loop-XXXXXXXX\n");
-        printDebug(file_desc_new);
+        /* Write the so far merged array in the new file
+        for (int record_num = 0; record_num < recs_writen_fromf1 + recs_writen_fromf2; record_num++ ) {
+            Sorted_InsertEntry(file_desc_new, merged_array[record_num]);
+        }*/
 
+        /* If block f1 was done or block f2 was done , place their counters to zero */
+        if (block_f1_done) {
+
+            /* Initialize the records writen from f1 */
+            recs_writen_fromf1 = 0;
+        }
+        if (block_f2_done) {
+
+            /* Initialize the records writen from f2 */
+            recs_writen_fromf2 = 0;
+        }
 
         /* Free */
-        free(array1);
-        free(array2);
-        free(new_array);
-        new_block_index++;
+        free(merged_array);
     }
 
-    printf("+-+-+-+-+-+-+-+Produced files %s+-+-+-+-+-+-+-+\n", file_name);
-    printDebug(file_desc_new);
-    printf("+-+-+-+-+-+-+-+end+-+-+-+-+-+-+-+\n");
+    //printf("+-+-+-+-+-+-+-+Produced files %s+-+-+-+-+-+-+-+\n", file_name);
+    //printDebug(file_desc_new);
+    //printf("+-+-+-+-+-+-+-+end+-+-+-+-+-+-+-+\n");
 
     /* Close all 3 files */
     Sorted_CloseFile(file_desc1);
     Sorted_CloseFile(file_desc2);
     Sorted_CloseFile(file_desc_new);
 
-    /* Remove the 2 */
-    int ret_val;
-    ret_val = remove(file_name1);
-    ret_val = remove(file_name2);
+    /* Remove the 2 files */
+    if (remove(file_name1) != 0)
+        printf("Error , when removing file %s", file_name1);
+    if(remove(file_name2) != 0)
+        printf("Error , when removing file %s", file_name1);
 
     return file_name;
+
 }
+
