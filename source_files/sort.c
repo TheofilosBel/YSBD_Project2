@@ -405,7 +405,10 @@ int Sorted_checkSortedFile(char *filename, int fieldNo) {
     int fileDesc;
     BlockInfo block_info;
     Record *record_array;
-    int block_num;
+    Record lastRecord;
+    int block_num, offset;
+    int isSorted = 0;
+    int records = 0;
     void *block;
 
     /* Open the file */
@@ -423,12 +426,64 @@ int Sorted_checkSortedFile(char *filename, int fieldNo) {
         return -1;
     }
 
+    /* For every block in the file check if its data is sorted */
+    for (block_num = 1; block_num < BF_GetBlockCounter(fileDesc); block_num++) {
+        /* Read the block */
+        if (BF_ReadBlock(fileDesc, block_num, &block) < 0) {
+            BF_PrintError("Error at Sorted_checkSortedFile, when getting block: ");
+            return -1;
+        }
+
+        /* Get is info */
+        memcpy(&block_info, block, sizeof(BlockInfo));
+
+        /* Count the records in the block */
+        records = (block_info.bytesInBlock - sizeof(BlockInfo)) / sizeof(Record);
+
+        /* Create an array of records */
+        if ((record_array = malloc(sizeof(Record)*records)) == NULL) {
+            printf("Error allocating mem\n");
+            exit(-1);
+        }
+
+        offset = sizeof(BlockInfo);
+        for (int x = 0 ; x < records ; x++) {
+            memcpy(&record_array[x], block + offset, sizeof(Record));
+            offset += sizeof(Record);
+        }
+
+        /*
+         * For every block other than the first one
+         * compare its first record with the
+         * last record of the previous block
+         */
+        if (block_num > 1) {
+            if (compare_records(record_array[0], lastRecord, fieldNo) < 0) {
+                printf("File %s is not sorted.\n", filename);
+                return -1;
+            }
+        }
+
+        /* Check if the array is sorted */
+        isSorted = isSortedArray(record_array, records, fieldNo);
+        if (isSorted == 0) {
+            printf("File %s is not sorted.\n", filename);
+            return -1;
+        }
+
+        /* If the array is sorted keep its last record */
+        copy_record(&lastRecord, &record_array[records-1]);
+
+        free(record_array);
+    }
+
     /* Close the file */
-    if ((fileDesc = Sorted_CloseFile(filename)) < 0) {
+    if ((fileDesc = Sorted_CloseFile(fileDesc)) < 0) {
         BF_PrintError("Error at Sorted_checkSortedFile, when closing file: ");
         return -1;
     }
 
+    printf("File %s is sorted.\n", filename);
     return 0;
 }
 

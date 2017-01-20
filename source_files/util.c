@@ -29,6 +29,22 @@ int lenfinder(int x) {
     return 1;
 }
 
+/*
+ * Checks if an array of records is sorted based on attribute fieldNo
+ * Returns 0 if it is sorted and -1 if not
+ */
+int isSortedArray(Record *record_array, int records, int fieldNo) {
+    int i;
+
+    for (i = 0; i < records; i++) {
+        if (compare_records(record_array[i], record_array[i+1], fieldNo) == 1) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 void swap_records(Record *record_array, int r1, int r2){
     /* -----------------------
      * Swap Records r1 and r2.
