@@ -308,32 +308,12 @@ int Sorted_SortFile(char *filename, int fieldNo) {
          * That block would be file_num block of father's file
          */
 
-        //printDebug(file_desc_father);
-
         /* Read father's file block */
         if (BF_ReadBlock(file_desc_father, file, &block) < 0) {
             BF_PrintError("Error at Sorted_ShortFile, when getting block: ");
             exit(-1);
         }
 
-        /* Print block */
-/*
-        Record record;
-        int offset1 = 0;
-        printf("----------------------------------------\n");
-        memcpy(&block_info, block, sizeof(BlockInfo));
-        printf("Block %d - bytesInBlock = %d\n\n", file, block_info.bytesInBlock);
-        offset1 += sizeof(BlockInfo);
-
-        while (offset1 < block_info.bytesInBlock) {
-            memcpy(&record, block + offset1, sizeof(Record));
-            offset1 += sizeof(Record);
-            printRecord(&record);
-        }
-
-        memcpy(&block_info, block, sizeof(BlockInfo));
-        printf("File %d, and info from fathers %d\n", file, block_info.bytesInBlock);
-*/
         /* Allocate size for one block */
         if ( BF_AllocateBlock(curr_file_1) != 0) {
             perror("Error , at Sorted_ShortFile when allocating block\n");
@@ -365,7 +345,7 @@ int Sorted_SortFile(char *filename, int fieldNo) {
 
     printf("\n\nGoing to stage 2---------------\n\n");
 
-    while (num_of_files != 0) {
+    while (num_of_files != 0 && num_of_files != 1) {
 
         /* Pick the 2 files for merging */
         curr_file_1 = 1;
@@ -415,9 +395,32 @@ int Sorted_SortFile(char *filename, int fieldNo) {
 
         /* Update the number of files for the next stage and the stage */
         num_of_files = num_of_files / 2 + num_of_files % 2;
-        //num_of_files = 0;
         stage++;
     }
+
+    /* Rename the last created file to
+     * <filename>Sorted<fielNo>
+     * */
+
+    /* Get the last file name created */
+    file_name1 = make_file_name(stage, 1);
+
+    /* make the new file_name */
+    file_name = malloc(sizeof(char)*(strlen(filename) + strlen("Sorted") + lenfinder(fieldNo)));
+    if (file_name == NULL) {
+        perror("Error in Sorted_SrortFile");
+    }
+
+    sprintf(file_name, "%sSorted%d", filename, fieldNo);
+    printf("New file is %s and old %s\n", file_name, file_name1);
+
+    if(rename(file_name1, file_name) != 0) {
+        printf("Error: unable to rename the file");
+    }
+
+    /* Free */
+    free(file_name);
+    free(file_name1);
 
     return 0;
 }
@@ -437,6 +440,7 @@ int Sorted_checkSortedFile(char *filename, int fieldNo) {
         BF_PrintError("Error at Sorted_checkSortedFile, when opening file: ");
         return -1;
     }
+
 
     /*
      * The file should have at least two blocks
